@@ -134,6 +134,13 @@ fn main() {
             println!("this feature is not implemented on macOS")
         }
     } else if let Some(matches) = matches.subcommand_matches("send") {
+        #[cfg(target_os = "macos")]
+        {
+            // application must be set or mac-notification-sys fails silently
+            use notify_rust::{get_bundle_identifier_or_default, set_application};
+            let app_id = get_bundle_identifier_or_default("Finder");
+            set_application(&app_id).expect("failed to set application");
+        }
         let mut notification = Notification::new();
 
         let summary = matches.value_of("summary").unwrap();
